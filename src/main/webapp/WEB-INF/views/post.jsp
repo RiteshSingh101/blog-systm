@@ -40,12 +40,13 @@
 
 		<h2>Create New Post</h2>
 
-		<form action="#" method="post">
+		<form action="/user/post" method="post">
 
 			<label>Title</label>
 
 			<input
 				type="text"
+				name="title"
 				class="input-box"
 				placeholder="Enter Blog Title">
 
@@ -53,6 +54,7 @@
 
 			<textarea
 				class="input-box"
+				name="content"
 				placeholder="Write your blog here..."></textarea>
 
 			<label>Tags</label>
@@ -60,6 +62,8 @@
 			<input
 				type="text"
 				class="input-box"
+				type="text"
+				name="tags"
 				placeholder="Java, Spring Boot, JSP">
 
 			<button

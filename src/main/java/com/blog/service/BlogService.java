@@ -1,5 +1,10 @@
 package com.blog.service;
 
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,9 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.blog.constant.AppUiPages;
+import com.blog.dto.BlogDTO;
+import com.blog.dto.BlogUpdateDTO;
 import com.blog.entity.Blog;
 import com.blog.entity.Status;
+import com.blog.entity.User;
 import com.blog.repo.BlogRepo;
+import com.blog.repo.UserRepo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BlogService {
 	private final BlogRepo blogRepo;
+	private final UserRepo userRepo;
 	
 	
 	public  String dashboard(Model model, int pageno, String search, String sort) {
@@ -49,6 +59,94 @@ public class BlogService {
 		model.addAttribute("blogs", blogs);
 		
 		return AppUiPages.HOME;
+	}
+	
+	
+	public String saveBlog(Principal principal, BlogDTO blogDTO, Model model) {
+		String email = principal.getName();
+		
+		User user = userRepo.findByEmail(email).get();
+		
+		Blog blog = new Blog();
+		BeanUtils.copyProperties(blogDTO, blog);
+		
+		blog.setUser(user);
+		
+		blogRepo.save(blog);
+		
+		model.addAttribute("msg","Blog published,status is : " + Status.PENDING);
+		
+		return AppUiPages.POST;
+	}
+	
+	public String profile(Principal principal, Model model, Integer id) {
+
+		String authenticatedUserEmail = principal.getName();
+
+		User user = userRepo.findByEmail(authenticatedUserEmail).get();
+
+		if (id != 0) {
+
+			Optional<Blog> optBlog = blogRepo.findById(id);
+
+			if (optBlog.isPresent()) {
+
+				Blog blog = optBlog.get();
+
+				if (blog.getUser().getEmail().equals(authenticatedUserEmail)) {
+					blogRepo.delete(blog);
+					model.addAttribute("delete_msg", "Successfully Deleted");
+				}
+			}
+		}
+
+		List<Blog> blogs = blogRepo.findByUser(user);
+
+		model.addAttribute("user", user);
+		model.addAttribute("blogs", blogs);
+
+		return AppUiPages.PROFILE;
+	}
+	
+	
+	public String editBlog(Principal principal, Model model, Integer id, String update) {
+		if(!update.equals("no")) {
+			model.addAttribute("update",update);
+		}
+		
+		String authenticatedUserEmail = principal.getName();
+		Optional<Blog> optBlog = blogRepo.findById(id);
+		
+		Blog blog = null;
+
+		if (optBlog.isPresent()) {
+			blog = optBlog.get();
+
+			if (!blog.getUser().getEmail().equals(authenticatedUserEmail)) {
+				return "redirect:/user/profile";
+			}
+		}
+
+		blog = optBlog.get();
+
+		String status = blog.getStatus().name();
+		String role = blog.getUser().getRole().name();
+
+		model.addAttribute("status", status);
+		model.addAttribute("role", role);
+		model.addAttribute("blog", blog);
+		return AppUiPages.EDIT_POST;
+	}
+	
+	public String updateBlog(Model model, BlogUpdateDTO blogUpdateDTO) {
+		Blog blog = blogRepo.findById(blogUpdateDTO.getId()).get();
+
+		blog.setTitle(blogUpdateDTO.getTitle());
+		blog.setContent(blogUpdateDTO.getContent());
+
+		blogRepo.save(blog);
+
+		return "redirect:/user/edit-blog?id=" + blog.getId() + "&update=Succesfully Update";
 	}
 	
 }

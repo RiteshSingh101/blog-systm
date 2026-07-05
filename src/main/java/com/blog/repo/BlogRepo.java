@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blog.entity.Blog;
 import com.blog.entity.Status;
+import com.blog.entity.User;
 
 public interface BlogRepo extends JpaRepository<Blog, Integer> {
 	
@@ -15,4 +16,6 @@ public interface BlogRepo extends JpaRepository<Blog, Integer> {
 	
 	Page<Blog> findByTitleOrTagsContainingIgnoreCaseAndStatus(String search, String search2, Pageable pageable,
 			Status approved);
+	
+	List<Blog> findByUser(User user);
 }
