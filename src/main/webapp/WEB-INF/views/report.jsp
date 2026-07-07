@@ -1,3 +1,6 @@
+<%@page import="java.time.format.DateTimeFormatter"%>
+<%@page import="com.blog.entity.Blog"%>
+<%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
@@ -7,10 +10,9 @@
 
 <meta charset="UTF-8">
 
-<title>Reports</title>
+<title>User Profile</title>
 
-<link rel="stylesheet"
-	href="style.css">
+<link rel="stylesheet" href="/style.css">
 
 </head>
 
@@ -20,68 +22,98 @@
 
 	<div class="header">
 
-		<h2>Admin Blog Dashboard</h2>
+		<h2>Blog Dashboard</h2>
 
 		<div class="navbar">
 
-			<!--<a href="admin-dashboard">Dashboard</a>-->
-
-			<a href="users">Manage Users</a>
-
-			<a href="posts">Manage Posts</a>
-
-			<a href="post-moderation">Post Moderation</a>
-
-			<a href="report">Reports</a>
-
-			<a href="login">Logout</a>
+			<a href="/user/dashboard">Home</a> <a href="/user/post">Create
+				New Post</a> <a href="/user/profile">Profile</a>
 
 		</div>
 
 	</div>
 
-	<!-- Main Content -->
+	<!-- Main -->
 
 	<div class="container">
+		
+		<h4 style = "color: green">${delete_msg}</h4>
+		<h2>User Profile</h2>
 
-		<h2>Reports</h2>
+		<div class="post">
 
-		<h2>Reports</h2>
+			<p>
+				<b>Name :</b> ${user.fullName}
+			</p>
 
-		<form action="#" method="post">
+			<p>
+				<b>Username :</b> ${user.username}
+			</p>
 
-			<label>Select Report</label>
+			<p>
+				<b>Email :</b> ${user.email}
+			</p>
 
-			<select class="input-box">
+			<p>
+				<b>Role :</b> ${user.role}
+			</p>
 
-				<option>Most Active Users</option>
+		</div>
 
-				<option>Most Popular Posts</option>
+		<h2 style="margin-top: 25px;">My Blog Posts</h2>
 
-				<option>Posts by Category</option>
+		<%
+		List<Blog> blogs = (List<Blog>) request.getAttribute("blogs");
 
-				<option>Pending Posts</option>
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		%>
 
-			</select>
+		<table>
+			<tr>
+				<th>Title</th>
+				<th>Date</th>
+				<th>Status</th>
+				<th>Actions</th>
+			</tr>
+			<%
+			if (blogs != null && !blogs.isEmpty()) {
+				for (Blog blog : blogs) {
+			%>
+			<tr>
+				<td><%=blog.getTitle()%></td>
+				<td><%=blog.getCreatedDate() != null ? blog.getCreatedDate().format(formatter) : ""%>
+				<td><%=blog.getStatus()%>
+				</td>
+				<td class="action-column"><a
+					href="edit-blog?id=<%=blog.getId()%>"
+					style="text-decoration: none;">
+						<button class="btn blue">Edit</button>
+				</a> <a href="/user/profile?id=<%=blog.getId()%>"
+					style="text-decoration: none;">
+						<button class="btn red">Delete</button>
+				</a></td>
+			</tr>
+			<%
+			}
+			} else {
+			%>
+			<tr>
+				<td colspan="3" style="text-align: center;">No blogs found.</td>
+			</tr>
+			<%
+			}
+			%>
+		</table>
 
-			<button
-				type="submit"
-				class="form-btn black">
-
-				Generate Report
-
-			</button>
-
+		<form action="/logout">
+			<button type="submit" class="form-btn black">Logout</button>
 		</form>
+
 	</div>
 
 	<!-- Footer -->
 
-	<div class="footer">
-
-		© 2026 Blog Platform
-
-	</div>
+	<div class="footer">© 2026 Blog Platform</div>
 
 </body>
 </html>

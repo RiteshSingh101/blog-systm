@@ -37,7 +37,7 @@
 	<!-- Main -->
 
 	<div class="container">
-
+	<h4 style="color: green">${msg}</h4>
 		<h2>Create New Post</h2>
 
 		<form action="/user/post" method="post">
@@ -61,9 +61,8 @@
 
 			<input
 				type="text"
-				class="input-box"
-				type="text"
 				name="tags"
+				class="input-box"
 				placeholder="Java, Spring Boot, JSP">
 
 			<button

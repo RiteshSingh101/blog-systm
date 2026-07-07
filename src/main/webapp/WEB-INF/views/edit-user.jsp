@@ -1,3 +1,4 @@
+<%@page import="com.blog.entity.User"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
@@ -10,7 +11,7 @@
 <title>Edit User</title>
 
 <link rel="stylesheet"
-	href="style.css">
+	href="/style.css">
 
 </head>
 
@@ -19,62 +20,67 @@
 	<!-- Header -->
 
 	<div class="header">
-
 		<h2>Admin Blog Dashboard</h2>
 
 		<div class="navbar">
 
-			<a href="admin-dashboard">Manage Posts</a>
+			<a href="/admin/dashboard">Manage Posts</a>
 
-			<a href="users">Manage Users</a>
+			<a href="/admin/users">Manage Users</a>
 
-			<a href="post-moderation">Post Moderation</a>
+			<a href="/admin/post-mod">Post Moderation</a>
 
-			<a href="report">Reports</a>
+			<a href="/admin/reports">Reports</a>
 
-			<a href="login">Logout</a>
+			<a href="/logout">Logout</a>
 
 		</div>
 
 	</div>
 
 	<!-- Main -->
+	<%
+		User user = (User)request.getAttribute("user");
+	%>
 
 	<div class="container">
 
 		<h2>Edit User</h2>
 
-		<form action="#" method="post">
+		<form action="edit-user" method="post">
 
 			<label>User ID</label>
 
 			<input
 				type="text"
+				name="id"
 				class="input-box"
-				value="1"
+				value="<%=user.getId() %>"
 				readonly>
 
 			<label>Username</label>
 
 			<input
 				type="text"
+				name="username"
 				class="input-box"
-				value="Aman Shukla">
+				value="<%=user.getUsername()%>">
 
 			<label>Email</label>
 
 			<input
 				type="email"
+				name="email"
 				class="input-box"
-				value="aman@gmail.com">
+				value="<%=user.getEmail() %>">
 
 			<label>Role</label>
 
-			<select class="input-box">
+			<select name="role" class="input-box">
+			
+				<option value="USER">USER</option>
 
-				<option>Admin</option>
-
-				<option>User</option>
+				<option value="ADMIN">ADMIN</option>
 
 			</select>
 
